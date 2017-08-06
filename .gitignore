@@ -1,0 +1,14 @@
+
+.DS_Store
+.classpath
+.gitignore
+.idea/
+.project
+
+
+bin/
+build/
+courseraJavaOOPsWeek3.iml
+data/
+
+
