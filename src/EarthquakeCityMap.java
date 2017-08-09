@@ -57,8 +57,11 @@ public class EarthquakeCityMap extends PApplet {
         valEq.addProperty("year", "1952");
 
 
+        int yellow = color(255, 255, 0);
+        int gray = color(150, 150, 150);
 
 //        Marker val = new SimplePointMarker(valLoc, valEq.getProperties());
+//        val.setColor(yellow);
 //        map.addMarker(val);
 
         List<PointFeature> bigEqs = new ArrayList<>();
@@ -69,15 +72,24 @@ public class EarthquakeCityMap extends PApplet {
         bigEqs.add(kamchatkaEq);
 
         List<Marker> markers = new ArrayList<>();
-        for(PointFeature eq: bigEqs){
+        for (PointFeature eq : bigEqs) {
             markers.add(new SimplePointMarker(eq.getLocation(), eq.getProperties()));
         }
+
+        for (Marker mk : markers) {
+            if (mk.getProperty("year") != null && Integer.parseInt(mk.getProperty("year").toString()) > 2000) {
+                mk.setColor(gray);
+            } else {
+                mk.setColor(yellow);
+            }
+        }
+
         map.addMarkers(markers);
 
 
     }
 
-    public void draw(){
+    public void draw() {
         background(10);
         map.draw();
 //        addKey();
