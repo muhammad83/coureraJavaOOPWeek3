@@ -11,37 +11,53 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class LifeExpectancy extends PApplet{
-    UnfoldingMap map;
-    Map<String, Float> lifeExpByCountry;
-    List<Feature> countries;
-    List<Marker> countryMarkers;
+public class LifeExpectancy extends PApplet {
+    private UnfoldingMap map;
+    private Map<String, Float> lifeExpByCountry;
+    private List<Feature> countries;
+    private List<Marker> countryMarkers;
 
-    public void setup(){
-        size(800,600, OPENGL);
-        map = new UnfoldingMap(this, 50,50,700,500, new Google.GoogleMapProvider());
+    public void setup() {
+        size(800, 600, OPENGL);
+        map = new UnfoldingMap(this, 50, 50, 700, 500, new Google.GoogleMapProvider());
         MapUtils.createDefaultEventDispatcher(this, map);
         countries = new ArrayList<>();
         countryMarkers = new ArrayList<>();
-    }
 
-    public void draw(){
-        map.draw();
-        lifeExpByCountry = loadLifeExpectancyFromCSV("LifeExpectancyWorldBank.csv");
+        lifeExpByCountry = loadLifeExpectancyFromCSV("LifeExpectancyWorldBankModule3.csv");
+        println("Loaded " + lifeExpByCountry.size() + " data entries");
         countries = GeoJSONReader.loadData(this, "countries.geo.json");
         countryMarkers = MapUtils.createSimpleMarkers(countries);
         map.addMarkers(countryMarkers);
         shadeCountries();
     }
 
-    private Map<String, Float> loadLifeExpectancyFromCSV(String filename){
+    public void draw() {
+        map.draw();
+    }
+
+    private void shadeCountries() {
+        for (Marker marker : countryMarkers) {
+            String countryId = marker.getId();
+
+            if (lifeExpByCountry.containsKey(countryId)) {
+                float lifeExp = lifeExpByCountry.get(countryId);
+                int colorLevl = (int) map(lifeExp, 40, 90, 10, 255);
+                marker.setColor(color(255 - colorLevl, 100, colorLevl));
+            } else {
+                marker.setColor(color(150,150,150));
+            }
+        }
+    }
+
+    private Map<String, Float> loadLifeExpectancyFromCSV(String filename) {
         Map<String, Float> lifeExpMap = new HashMap<>();
 
         String[] rows = loadStrings(filename);
 
-        for (String row : rows){
+        for (String row : rows) {
             String[] columns = row.split(",");
-            if(columns.length >= 5){
+            if (columns.length == 6 && !columns[5].equals("..")) {
                 float value = Float.parseFloat(columns[5]);
                 lifeExpMap.put(columns[4], value);
             }
